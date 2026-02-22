@@ -1,0 +1,762 @@
+import React, { useState } from 'react';
+import { Home, CheckCircle2, XCircle, ArrowRight, RotateCcw, BookOpen, GraduationCap } from 'lucide-react';
+
+// Full dataset of 57 questions with their situations
+const quizData = [
+  {
+    id: 1,
+    situation: "Situation 1: Consider materials and soil testing equipment and apparatuses.",
+    question: "Proctor mold, rammer, balance, and moisture cans and ovens are examples of what compaction tests apparatuses.",
+    options: ["Standard Proctor Test", "Modified Proctor Test", "Strength Test", "Direct Shear Test"],
+    answer: 0
+  },
+  {
+    id: 2,
+    situation: "Situation 1: Consider materials and soil testing equipment and apparatuses.",
+    question: "Standard Penetration Test (SPT) Hammer and Split Spoon Sample, CBR Test Apparatus, Pocket Penetrometer and Vane Shear Apparatus is an example of what test.",
+    options: ["Permeability Testing", "Consolidation Testing", "In-Situ Field Testing", "Strength Testing"],
+    answer: 2
+  },
+  {
+    id: 3,
+    situation: "Situation 1: Consider materials and soil testing equipment and apparatuses.",
+    question: "Liquid Limit Devise (Casagrande Cup), Plastic Limit Rolling Device (Glass Plate), Shrinkage Limit Dish and Mercury Displacement Apparatuses is an example of what soil classification testing.",
+    options: ["Consistency Limits", "Grain Size Distribution", "Permeability Testing", "Consolidation Testing"],
+    answer: 0
+  },
+  {
+    id: 4,
+    situation: "Situation 2: A reinforced concrete square footing supports a 400 mm x 400 mm square column carrying a total dead load of 700 kN and a total live load of 1100 kN. The footing dimension is 3 m x 3 m and is supported by 9 piles spaced 1 m apart on a 3 x 3 formation. The effective depth of the footing is 600 mm. f'c = 30 MPa, fy = 375 MPa.",
+    question: "Which of the following most nearly gives the factored load on each pile, in kN.",
+    options: ["455.12", "316.67", "200.3", "362.25"],
+    answer: 1
+  },
+  {
+    id: 5,
+    situation: "Situation 2: A reinforced concrete square footing supports a 400 mm x 400 mm square column carrying a total dead load of 700 kN and a total live load of 1100 kN. The footing dimension is 3 m x 3 m and is supported by 9 piles spaced 1 m apart on a 3 x 3 formation. The effective depth of the footing is 600 mm. f'c = 30 MPa, fy = 375 MPa.",
+    question: "Which of the following most nearly gives the nominal wide beam shear to be resisted by the footing, in MPa.",
+    options: ["0.62", "0.51", "0.76", "0.87"],
+    answer: 0
+  },
+  {
+    id: 6,
+    situation: "Situation 2: A reinforced concrete square footing supports a 400 mm x 400 mm square column carrying a total dead load of 700 kN and a total live load of 1100 kN. The footing dimension is 3 m x 3 m and is supported by 9 piles spaced 1 m apart on a 3 x 3 formation. The effective depth of the footing is 600 mm. f'c = 30 MPa, fy = 375 MPa.",
+    question: "Which of the following most nearly gives the factored moment to be resisted by the footing in kN-m.",
+    options: ["550", "760", "890", "610"],
+    answer: 1
+  },
+  {
+    id: 7,
+    situation: "Situation 3: The compound beam shown in Figure Situation 3 is pin connected at B. Neglect the beam's weight and thickness and answer the following questions. Use notation CC for counter clockwise and C for clockwise. [Refer to image for diagram]",
+    question: "What is the moment reaction at support A.",
+    options: ["32 kN-m, C", "12 kN-m, CC", "42 kN-m, C", "32 kN-m, CC"],
+    answer: 3
+  },
+  {
+    id: 8,
+    situation: "Situation 3: The compound beam shown in Figure Situation 3 is pin connected at B. Neglect the beam's weight and thickness and answer the following questions. Use notation CC for counter clockwise and C for clockwise. [Refer to image for diagram]",
+    question: "What is vertical reaction at support C.",
+    options: ["4 kN", "6 kN", "12 kN", "32 kN"],
+    answer: 0
+  },
+  {
+    id: 9,
+    situation: "Situation 3: The compound beam shown in Figure Situation 3 is pin connected at B. Neglect the beam's weight and thickness and answer the following questions. Use notation CC for counter clockwise and C for clockwise. [Refer to image for diagram]",
+    question: "What is the vertical reaction at support A.",
+    options: ["4 kN", "6 kN", "12 kN", "32 kN"],
+    answer: 2
+  },
+  {
+    id: 10,
+    situation: "Situation 4: A 2.5 - m square footing is used to support a square concrete column 500 mm on each side. The column supports an axial load of 1200 kN and an axial live load of 950 kN. The effective depth of footing above bottom reinforcement is 510 mm. Use fy = 415 MPa, and f'c = 27 MPa.",
+    question: "Which of the following gives the factored shear force at the critical section for one way or wide beam shear, in kN.",
+    options: ["524.1", "645.8", "1523.4", "965.3"],
+    answer: 1
+  },
+  {
+    id: 11,
+    situation: "Situation 4: A 2.5 - m square footing is used to support a square concrete column 500 mm on each side. The column supports an axial load of 1200 kN and an axial live load of 950 kN. The effective depth of footing above bottom reinforcement is 510 mm. Use fy = 415 MPa, and f'c = 27 MPa.",
+    question: "Which of the following gives the factored shear the critical section for two-way or punching shear, in kN.",
+    options: ["3218", "2548", "2757", "3033"],
+    answer: 2
+  },
+  {
+    id: 12,
+    situation: "Situation 4: A 2.5 - m square footing is used to support a square concrete column 500 mm on each side. The column supports an axial load of 1200 kN and an axial live load of 950 kN. The effective depth of footing above bottom reinforcement is 510 mm. Use fy = 415 MPa, and f'c = 27 MPa.",
+    question: "Which of the following gives the ultimate shear capacity at the critical section for two-way shear, in kN.",
+    options: ["3033", "2863", "2178", "3547"],
+    answer: 0
+  },
+  {
+    id: 13,
+    situation: "Situation 5: In the connection shown in the Figure Situation 5, a load transmits 40 kN load acting at an eccentricity of 200 mm. The load is transmitted to the column by the plates and 8 mm weld. The plates are adequate to transmit the load to the weld. The connection can be analyzed by replacing the given load with an equivalent loading composed of a vertical force alone acting through the centroid of the rivets and a moment.",
+    question: "Which of the following most nearly gives the maximum shear stress in the welds in MPa for equivalent vertical force alone acting on the centroid.",
+    options: ["18", "14", "15", "21"],
+    answer: 0
+  },
+  {
+    id: 14,
+    situation: "Situation 5: In the connection shown in the Figure Situation 5...",
+    question: "Which of the following most nearly gives the maximum shear stress in the welds in MPa for the equivalent moment alone.",
+    options: ["22", "46", "26", "38"],
+    answer: 3
+  },
+  {
+    id: 15,
+    situation: "Situation 5: In the connection shown in the Figure Situation 5...",
+    question: "Which of the following most nearly gives the maximum shear stress in the welds in MPa.",
+    options: ["52", "39", "42", "63"],
+    answer: 0
+  },
+  {
+    id: 16,
+    situation: "Situation 6: The uniform 10-kg ladder in Figure Situation 6 rests against the smooth wall at B, and the end A rests on the rough horizontal plane for which the coefficient of static friction is us = 0.3. The ladder is in verge of slipping.",
+    question: "What is the angle of inclination theta in degrees of the ladder if it is in the verge of slipping.",
+    options: ["54.09", "49.05", "59.04", "66.67"],
+    answer: 0
+  },
+  {
+    id: 17,
+    situation: "Situation 6: The uniform 10-kg ladder in Figure Situation 6 rests against the smooth wall...",
+    question: "What is the normal reaction at B if the ladder is in the verge of slipping.",
+    options: ["24.93 N", "29.43 N", "23.49 N", "29.34 N"],
+    answer: 1
+  },
+  {
+    id: 18,
+    situation: "Situation 6: The uniform 10-kg ladder in Figure Situation 6 rests against the smooth wall...",
+    question: "What is the normal reaction at A if the ladder is in the verge of slipping.",
+    options: ["98.1 N", "9.81 N", "29.43 N", "81.9 N"],
+    answer: 0
+  },
+  {
+    id: 19,
+    situation: "Situation 7: Consider Figure Situation 7 as shown. Support A is a ball and socket. Support is a journal bearing, and support C is a roller.",
+    question: "Give the nearest value of the reaction at support C.",
+    options: ["360 N downward", "540 N upward", "450 N upward", "600 N upward"],
+    answer: 2
+  },
+  {
+    id: 20,
+    situation: "Situation 7: Consider Figure Situation 7 as shown...",
+    question: "What is the nearest value of the vertical reaction at support B.",
+    options: ["360 N downward", "450 N downward", "600 N downward", "720 N upward"],
+    answer: 1
+  },
+  {
+    id: 21,
+    situation: "Situation 7: Consider Figure Situation 7 as shown...",
+    question: "What is the nearest value of the vertical reaction at support A.",
+    options: ["750 N upward", "720 N upward", "600 N upward", "540 N upward"],
+    answer: 0
+  },
+  {
+    id: 22,
+    situation: "Situation 8: A steel hanger consist of a plate 125 mm x 6 mm held at the top by 20-mm rivets in single shear. The rivets are arranged in diamond form so that the first net section has one hole and the second net section has two holes. Allowance stresses are 110 MPa for tension in plates, 83 MPa for shear in rivets, and 165 MPa for bearing between the rivets and the plates. Hole diameter is 3 mm larger than the river diameter.",
+    question: "Which of the following most nearly gives the load on the hanger so that the allowable tensile stress in the plates will not be exceeded.",
+    options: ["72.14 kN", "58.17 kN", "67.32 kN", "92.56 kN"],
+    answer: 2
+  },
+  {
+    id: 23,
+    situation: "Situation 8: A steel hanger consist of a plate...",
+    question: "Which of the following most nearly gives the load on the hanger so that the allowable bearing stress will not be exceeded.",
+    options: ["79.2 kN", "45.2 kN", "65.4 kN", "85.7 kN"],
+    answer: 0
+  },
+  {
+    id: 24,
+    situation: "Situation 8: A steel hanger consist of a plate...",
+    question: "Which of the following most nearly gives the load on the hanger so that the allowable shear stress will not be exceeded.",
+    options: ["98.5 kN", "104.3 kN", "152.3 kN", "125.2 kN"],
+    answer: 1
+  },
+  {
+    id: 25,
+    situation: "Situation 9: Conventional and true stress-strain diagrams for ductile material (steel) (not to scale) is shown in Figure Situation 9.",
+    question: "What do you call the first triangular region in Figure Situation 00.",
+    options: ["elastic behavior", "elastic region", "yielding region", "plastic behavior"],
+    answer: 1
+  },
+  {
+    id: 26,
+    situation: "Situation 9: Conventional and true stress-strain diagrams...",
+    question: "What do you call the behavior of the material after the proportional limit. (the rest of the diagram after the triangle)",
+    options: ["elastic behavior", "strain hardening", "necking", "plastic behavior"],
+    answer: 3
+  },
+  {
+    id: 27,
+    situation: "Situation 9: Conventional and true stress-strain diagrams...",
+    question: "What do you call the region bounded by the rectangular portion of the diagram in Figure Situation 00.",
+    options: ["yielding region", "strain hardening", "necking region", "elastic region"],
+    answer: 0
+  },
+  {
+    id: 28,
+    situation: "Situation 10: Consider the beam with the system of loadings as shown in Figure Situation 10.",
+    question: "What is the maximum moment developed on the beam in kN-m.",
+    options: ["90.25", "92.50", "34.25", "108.75"],
+    answer: 3
+  },
+  {
+    id: 29,
+    situation: "Situation 10: Consider the beam with the system of loadings...",
+    question: "What is the maximum shear developed on the beam in kN.",
+    options: ["108.75", "34.25", "80.00", "90.25"],
+    answer: 1
+  },
+  {
+    id: 30,
+    situation: "Situation 10: Consider the beam with the system of loadings...",
+    question: "What is the area of the shear diagram between point A and point B.",
+    options: ["92.5 kN", "80.00 kN-m", "28.75 kN-m", "108.75 kN"],
+    answer: 2
+  },
+  {
+    id: 31,
+    situation: "Situation 11: A prestressed concrete beam 400 mm x 800 mm is to carry a uniform load of 40 kN/m on a simple span of 11 m. The beam is prestressed to 2200 kN applied 200 mm below the neutral axis.",
+    question: "Which of the following most nearly gives the stress at the bottom of the beam at midspan.",
+    options: ["-4 MPa", "-3 MPa", "-2 MPa", "-11 MPa"],
+    answer: 1
+  },
+  {
+    id: 32,
+    situation: "Situation 11: A prestressed concrete beam 400 mm x 800 mm...",
+    question: "Which of the following most nearly gives the stress at the top of the beam at midspan.",
+    options: ["-11 MPa", "-3 MPa", "-4 MPa", "-2 MPa"],
+    answer: 0
+  },
+  {
+    id: 33,
+    situation: "Situation 11: A prestressed concrete beam 400 mm x 800 mm...",
+    question: "If a concentrated load P is to be applied at midspan, which of the following most nearly gives the value of P so that the stress at the bottom of the beam at midspan is zero.",
+    options: ["52 kN", "24 kN", "36 kN", "47 kN"],
+    answer: 3
+  },
+  {
+    id: 34,
+    situation: "Situation 12: When force P is applied to the rigid lever arm ABC in Figure Situation 12, the arm rotates counterclockwise about pin A through an angle of 0.05 degrees.",
+    question: "Give the nearest normal strain developed in wire BD.",
+    options: ["0.0116", ".00349", "0.00116", "0.03491"],
+    answer: 2
+  },
+  {
+    id: 35,
+    situation: "Situation 12: When force P is applied to the rigid lever arm ABC...",
+    question: "Give the nearest elongation in mm developed in wire BD.",
+    options: ["0.3491", "0.0349", "0.1160", "0.00116"],
+    answer: 0
+  },
+  {
+    id: 36,
+    situation: "Situation 12: When force P is applied to the rigid lever arm ABC...",
+    question: "Give the nearest final length in mm of wire BD.",
+    options: ["300.116", "300.3491", "300.0349", "300.4391"],
+    answer: 1
+  },
+  {
+    id: 37,
+    situation: "Situation 13: Consider the beam on the Figure Situation 13. Assume point A is a fixed support, B is a pin and D is a roller. EI is constant.",
+    question: "Which of the following gives the maximum moment reaction in kN-m at any support of the beam shown.",
+    options: ["12.5", "8.75", "37.5", "25.0"],
+    answer: 2
+  },
+  {
+    id: 38,
+    situation: "Situation 13: Consider the beam on the Figure Situation 13...",
+    question: "Which of the following gives the nearest rotation in (kN-m2)/EI at point D of the structure.",
+    options: ["68.75", "75.00", "8.75", "16.88"],
+    answer: 1
+  },
+  {
+    id: 39,
+    situation: "Situation 13: Consider the beam on the Figure Situation 13...",
+    question: "Which of the following gives the nearest displacement in (kN-m3)/EI of point C in the structure.",
+    options: ["168.75", "375.00", "687.51", "573.75"],
+    answer: 0
+  },
+  {
+    id: 40,
+    situation: "Situation 14: A uniform live load of 1.75 kN/m and a single concentrated live force of 8 kN are placed on the floor beams. The beams also support a uniform dead load of 250 N/m. You may use influence lines for shear and moment of the structure shown on the Figure Situation 14.",
+    question: "What the nearest value of the influence line diagram for shear at point B.",
+    options: ["0.667", "-0.667", "1.0", "-1.0"],
+    answer: 1
+  },
+  {
+    id: 41,
+    situation: "Situation 14: A uniform live load of 1.75 kN/m...",
+    question: "What is the maximum negative shear in panel BC of the girder.",
+    options: ["-8.21 kN", "-12.3 kN", "-23.1 kN", "-13.2 kN"],
+    answer: 0
+  },
+  {
+    id: 42,
+    situation: "Situation 14: A uniform live load of 1.75 kN/m...",
+    question: "What is the maximum positive moment at point B in kN-m.",
+    options: ["12.3", "8.21", "13.2", "23.1"],
+    answer: 0
+  },
+  {
+    id: 43,
+    situation: "Situation 15: A reinforced concrete rectangular beam has a width of 250 mm and an effective depth of 500 mm. The beam is required to carry an ultimate moment of 300 kN-m. It is required to design the steel reinforcement of the beam. Compression reinforcement, if necessary, will be placed at a depth of 75 mm from the extreme compression concrete. Assume fy = 275.8 MPa and f'c = 35 MPa.",
+    question: "Which of the following most nearly gives the maximum reinforcement ratio according to 1992 NSCP?",
+    options: ["0.045", "0.036", "0.015", "0.028"],
+    answer: 0
+  },
+  {
+    id: 44,
+    situation: "Situation 15: A reinforced concrete rectangular beam...",
+    question: "Which of the following most nearly gives the required tension steel area in square mm.",
+    options: ["3450", "2680", "3690", "3250"],
+    answer: 1
+  },
+  {
+    id: 45,
+    situation: "Situation 15: A reinforced concrete rectangular beam...",
+    question: "Using 25 mm diameter bar, which of the following gives the required number of bars for the beam.",
+    options: ["4", "8", "6", "7"],
+    answer: 2
+  },
+  {
+    id: 46,
+    situation: "Situation 16: Consider the continuous beam as shown in Figure Situation 16. EI is constant. Notations: C = clockwise, CC = counterclockwise.",
+    question: "Which of the following gives the nearest moment reaction in support D.",
+    options: ["243.3 kN-m, C", "125.2 kN-m, CC", "234.3 kN-m, C", "242.1 kN-m, CC"],
+    answer: 2
+  },
+  {
+    id: 47,
+    situation: "Situation 16: Consider the continuous beam as shown in Figure Situation 16...",
+    question: "Which of the following gives the nearest moment reaction in support A.",
+    options: ["160.9 kN-m, CC", "125.2 kN-m, C", "169.6 kN-m, CC", "62.5 kN-m, C"],
+    answer: 1
+  },
+  {
+    id: 48,
+    situation: "Situation 16: Consider the continuous beam as shown in Figure Situation 16...",
+    question: "Which of the following gives the maximum moment in kN-m occurred in the beam.",
+    options: ["342.5", "281.5", "334.3", "242.1"],
+    answer: 0
+  },
+  {
+    id: 49,
+    situation: "Situation 17: Classify each of the structures shown in the figures as statically determinate or statically indeterminate. If statically indeterminate, state the number of degrees of indeterminacy. The structures are subjected to arbitrary external loading that are assumed to be known and can act anywhere on the structures.",
+    question: "Consider figure of situation 00 number 01 (Fixed support left, internal pins, roller)",
+    options: ["statically determinate", "statically indeterminate to 2°", "statically indeterminate to 1°", "statically indeterminate to 3°"],
+    answer: 2
+  },
+  {
+    id: 50,
+    situation: "Situation 17: Classify each of the structures...",
+    question: "Consider figure of situation 00 number 02",
+    options: ["statically indeterminate to 3°", "statically indeterminate to 2°", "statically indeterminate to 1°", "statically determinate"],
+    answer: 3
+  },
+  {
+    id: 51,
+    situation: "Situation 17: Classify each of the structures...",
+    question: "Consider figure of situation 00 number 03",
+    options: ["statically determinate", "statically indeterminate to 1°", "statically indeterminate to 2°", "statically indeterminate to 3°"],
+    answer: 0
+  },
+  {
+    id: 52,
+    situation: "Situation 18: Consider the system of loadings on the structure of Figure Situation 18.",
+    question: "Which of the following gives the nearest horizontal reaction at the pin support at point C in kN.",
+    options: ["3.00", "9.40", "14.70", "9.87"],
+    answer: 2
+  },
+  {
+    id: 53,
+    situation: "Situation 18: Consider the system of loadings...",
+    question: "Which of the following gives the nearest horizontal reaction at the pin support at point A in kN.",
+    options: ["9.40", "9.87", "3.00", "14.70"],
+    answer: 1
+  },
+  {
+    id: 54,
+    situation: "Situation 18: Consider the system of loadings...",
+    question: "Which of the following gives the nearest vertical reaction at the pin support at point A in kN.",
+    options: ["14.70", "3.0.0", "9.87", "9.40"],
+    answer: 3
+  },
+  {
+    id: 55,
+    situation: "Situation 19: An example of four-point loading is shown in Figure Situation 19. Assume EI as constant.",
+    question: "What is the maximum moment occurred in the beam.",
+    options: ["3Pa/2EI", "Pa/EI", "2Pa/EI", "Pa/8EI"],
+    answer: 0
+  },
+  {
+    id: 56,
+    situation: "Situation 19: An example of four-point loading...",
+    question: "Give the displacement under the load P at point C in the beam.",
+    options: ["9Pa²/4EI", "7Pa²/4EI", "9Pa³/4EI", "7Pa³/4EI"],
+    answer: 2
+  },
+  {
+    id: 57,
+    situation: "Situation 19: An example of four-point loading...",
+    question: "Give the nearest rotation at support B of the beam.",
+    options: ["7Pa³/4EI", "7Pa²/4EI", "9Pa²/4EI", "9Pa³/4EI"],
+    answer: 1
+  }
+];
+
+export default function App() {
+  const [appState, setAppState] = useState('home'); // home, practice, exam, results
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [userAnswers, setUserAnswers] = useState({});
+  const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
+
+  const startPractice = () => {
+    setAppState('practice');
+    setCurrentIndex(0);
+    setUserAnswers({});
+    setIsAnswerRevealed(false);
+  };
+
+  const startExam = () => {
+    setAppState('exam');
+    setCurrentIndex(0);
+    setUserAnswers({});
+    setIsAnswerRevealed(false);
+  };
+
+  const returnHome = () => {
+    setAppState('home');
+  };
+
+  const handleSelectOption = (optionIndex) => {
+    // If practicing and answer is already revealed, prevent changing it
+    if (appState === 'practice' && isAnswerRevealed) return;
+
+    setUserAnswers({
+      ...userAnswers,
+      [currentIndex]: optionIndex
+    });
+
+    if (appState === 'practice') {
+      setIsAnswerRevealed(true);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex < quizData.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setIsAnswerRevealed(false);
+    } else if (appState === 'practice') {
+      setAppState('results');
+    }
+  };
+
+  const handleSubmitExam = () => {
+    setAppState('results');
+  };
+
+  const currentQuestion = quizData[currentIndex];
+  const progressPercent = ((currentIndex + 1) / quizData.length) * 100;
+
+  // Calculate Score
+  let score = 0;
+  quizData.forEach((q, idx) => {
+    if (userAnswers[idx] === q.answer) {
+      score++;
+    }
+  });
+
+  return (
+    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans selection:bg-blue-200">
+      
+      {/* HEADER */}
+      <header className="bg-slate-900 text-white shadow-md p-4 sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={returnHome}>
+            <GraduationCap className="h-6 w-6 text-blue-400" />
+            <h1 className="text-xl font-bold tracking-tight">CE Structural Review</h1>
+          </div>
+          {(appState === 'practice' || appState === 'exam' || appState === 'results') && (
+            <button 
+              onClick={returnHome}
+              className="flex items-center gap-2 text-sm font-medium hover:text-blue-300 transition-colors bg-slate-800 px-3 py-1.5 rounded-md"
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </button>
+          )}
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto p-4 md:p-6 py-8">
+        
+        {/* HOME SCREEN */}
+        {appState === 'home' && (
+          <div className="flex flex-col items-center justify-center py-12 px-4 animate-in fade-in zoom-in duration-300">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 w-full max-w-2xl text-center">
+              <div className="mx-auto w-16 h-16 bg-blue-100 text-blue-600 flex items-center justify-center rounded-2xl mb-6 shadow-sm">
+                <BookOpen className="h-8 w-8" />
+              </div>
+              <h2 className="text-3xl font-extrabold text-slate-900 mb-4">Structural Analysis & Design</h2>
+              <p className="text-slate-600 mb-8 max-w-lg mx-auto">
+                Test your knowledge with 57 comprehensive questions from your civil engineering reviewer. Choose a mode below to begin.
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <button 
+                  onClick={startPractice}
+                  className="flex flex-col items-center p-6 border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 rounded-xl transition-all group"
+                >
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                    <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">Practice Mode</h3>
+                  <p className="text-sm text-slate-500">Get immediate feedback after every question. Best for studying.</p>
+                </button>
+
+                <button 
+                  onClick={startExam}
+                  className="flex flex-col items-center p-6 border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 rounded-xl transition-all group"
+                >
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                    <BookOpen className="h-6 w-6 text-indigo-500" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">Full Exam Mode</h3>
+                  <p className="text-sm text-slate-500">Answers are hidden until the end. Simulate the real testing environment.</p>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* QUIZ SCREENS (Practice & Exam) */}
+        {(appState === 'practice' || appState === 'exam') && (
+          <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
+            
+            {/* Progress Bar */}
+            <div className="mb-6">
+              <div className="flex justify-between items-end mb-2">
+                <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                  Question {currentIndex + 1} of {quizData.length}
+                </span>
+                <span className="text-xs font-medium text-slate-400">
+                  {appState === 'practice' ? 'Practice Mode' : 'Exam Mode'}
+                </span>
+              </div>
+              <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-300 ease-out rounded-full ${appState === 'practice' ? 'bg-blue-500' : 'bg-indigo-500'}`} 
+                  style={{ width: `${progressPercent}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Question Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
+              <div className="p-5 md:p-8">
+                
+                {/* Situation Box */}
+                <div className="bg-slate-50 border-l-4 border-slate-400 p-4 rounded-r-lg mb-6 text-sm text-slate-700 font-medium">
+                  {currentQuestion.situation}
+                </div>
+
+                <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-6 leading-relaxed">
+                  {currentQuestion.id}. {currentQuestion.question}
+                </h3>
+
+                <div className="space-y-3">
+                  {currentQuestion.options.map((option, idx) => {
+                    
+                    const isSelected = userAnswers[currentIndex] === idx;
+                    const isCorrect = currentQuestion.answer === idx;
+                    
+                    let btnClass = "w-full text-left p-4 rounded-xl border-2 transition-all flex items-center justify-between group ";
+                    
+                    if (appState === 'practice' && isAnswerRevealed) {
+                      if (isCorrect) {
+                        btnClass += "border-emerald-500 bg-emerald-50 text-emerald-900";
+                      } else if (isSelected && !isCorrect) {
+                        btnClass += "border-rose-500 bg-rose-50 text-rose-900";
+                      } else {
+                        btnClass += "border-slate-100 bg-slate-50 opacity-60";
+                      }
+                    } else {
+                      // Exam mode or unselected practice mode
+                      if (isSelected) {
+                        btnClass += "border-blue-500 bg-blue-50 text-blue-900 shadow-sm";
+                      } else {
+                        btnClass += "border-slate-200 hover:border-blue-300 hover:bg-slate-50 bg-white";
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleSelectOption(idx)}
+                        disabled={appState === 'practice' && isAnswerRevealed}
+                        className={btnClass}
+                      >
+                        <div className="flex items-center gap-4">
+                          <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 
+                            ${(isSelected && (!isAnswerRevealed || appState === 'exam')) ? 'border-blue-500 bg-blue-500 text-white' : 
+                              (isAnswerRevealed && isCorrect) ? 'border-emerald-500 bg-emerald-500 text-white' : 
+                              (isAnswerRevealed && isSelected && !isCorrect) ? 'border-rose-500 bg-rose-500 text-white' : 
+                              'border-slate-300 text-slate-500 bg-white group-hover:border-slate-400'}`}>
+                            {String.fromCharCode(65 + idx)}
+                          </span>
+                          <span className="font-medium text-[15px]">{option}</span>
+                        </div>
+                        
+                        {/* Status Icons for Practice Mode */}
+                        {appState === 'practice' && isAnswerRevealed && (
+                          <div className="flex-shrink-0 ml-4">
+                            {isCorrect && <CheckCircle2 className="h-6 w-6 text-emerald-500" />}
+                            {isSelected && !isCorrect && <XCircle className="h-6 w-6 text-rose-500" />}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Bottom Actions */}
+              <div className="bg-slate-50 p-4 px-6 md:px-8 border-t border-slate-100 flex justify-between items-center">
+                <div className="text-sm font-medium text-slate-500">
+                  {userAnswers[currentIndex] !== undefined ? 'Answer recorded' : 'Please select an option'}
+                </div>
+                
+                {currentIndex < quizData.length - 1 ? (
+                  <button 
+                    onClick={handleNext}
+                    disabled={userAnswers[currentIndex] === undefined}
+                    className="flex items-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next Question
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handleSubmitExam}
+                    disabled={userAnswers[currentIndex] === undefined}
+                    className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Finish & View Results
+                    <CheckCircle2 className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* RESULTS SCREEN */}
+        {appState === 'results' && (
+          <div className="max-w-4xl mx-auto animate-in fade-in zoom-in-95 duration-400">
+            
+            {/* Score Summary Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8 text-center">
+              <div className="inline-flex items-center justify-center p-4 bg-emerald-100 rounded-full mb-6">
+                <GraduationCap className="h-12 w-12 text-emerald-600" />
+              </div>
+              <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Exam Completed!</h2>
+              <p className="text-slate-500 mb-8">Here is how you performed on the Structural Analysis & Design review.</p>
+              
+              <div className="flex justify-center gap-8 md:gap-16 mb-8">
+                <div className="text-center">
+                  <div className="text-5xl font-black text-slate-900 mb-1">{score}</div>
+                  <div className="text-sm font-semibold text-slate-400 uppercase tracking-widest">Correct</div>
+                </div>
+                <div className="w-px bg-slate-200"></div>
+                <div className="text-center">
+                  <div className="text-5xl font-black text-slate-900 mb-1">{quizData.length}</div>
+                  <div className="text-sm font-semibold text-slate-400 uppercase tracking-widest">Total</div>
+                </div>
+                <div className="w-px bg-slate-200"></div>
+                <div className="text-center">
+                  <div className={`text-5xl font-black mb-1 ${score / quizData.length >= 0.7 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                    {Math.round((score / quizData.length) * 100)}%
+                  </div>
+                  <div className="text-sm font-semibold text-slate-400 uppercase tracking-widest">Score</div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-4 mt-8">
+                <button 
+                  onClick={startPractice}
+                  className="flex items-center gap-2 border-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 px-6 py-3 rounded-xl font-bold transition-all"
+                >
+                  <RotateCcw className="h-5 w-5" />
+                  Try Again (Practice)
+                </button>
+                <button 
+                  onClick={returnHome}
+                  className="flex items-center gap-2 bg-slate-900 text-white hover:bg-slate-800 px-6 py-3 rounded-xl font-bold transition-all shadow-md"
+                >
+                  <Home className="h-5 w-5" />
+                  Return to Home
+                </button>
+              </div>
+            </div>
+
+            {/* Answer Breakdown */}
+            <h3 className="text-xl font-bold text-slate-900 mb-6 px-2">Detailed Review</h3>
+            <div className="space-y-4">
+              {quizData.map((q, idx) => {
+                const isCorrect = userAnswers[idx] === q.answer;
+                const userChoice = userAnswers[idx] !== undefined ? q.options[userAnswers[idx]] : "Not answered";
+                const correctChoice = q.options[q.answer];
+
+                return (
+                  <div key={q.id} className={`p-6 rounded-xl border ${isCorrect ? 'bg-emerald-50/50 border-emerald-100' : 'bg-white border-slate-200'}`}>
+                    <div className="flex gap-4 items-start">
+                      <div className="mt-1 flex-shrink-0">
+                        {isCorrect ? 
+                          <CheckCircle2 className="h-6 w-6 text-emerald-500" /> : 
+                          <XCircle className="h-6 w-6 text-rose-500" />
+                        }
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-slate-800 mb-2">
+                          <span className="text-slate-500 mr-2">{q.id}.</span> 
+                          {q.question}
+                        </p>
+                        <div className="grid md:grid-cols-2 gap-4 mt-4 bg-slate-50/80 p-4 rounded-lg">
+                          <div>
+                            <span className="text-xs font-bold text-slate-400 uppercase mb-1 block">Your Answer</span>
+                            <span className={`text-sm font-medium ${isCorrect ? 'text-emerald-700' : 'text-rose-600'}`}>
+                              {userChoice}
+                            </span>
+                          </div>
+                          {!isCorrect && (
+                            <div>
+                              <span className="text-xs font-bold text-slate-400 uppercase mb-1 block">Correct Answer</span>
+                              <span className="text-sm font-medium text-emerald-700">
+                                {correctChoice}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            <div className="mt-12 text-center pb-8">
+              <button 
+                onClick={returnHome}
+                className="inline-flex items-center gap-2 bg-slate-200 text-slate-700 hover:bg-slate-300 px-6 py-3 rounded-xl font-bold transition-all"
+              >
+                <Home className="h-5 w-5" />
+                Back to Home Screen
+              </button>
+            </div>
+            
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
